@@ -13,6 +13,7 @@
 #import "TAPAsset.h"
 #import "TAPContent.h"
 #import "TAPTour.h"
+#import "TAPTourSet.h"
 #import "TAPProperty.h"
 #import "TAPSource.h"
 #import "TAPAssetRef.h"
@@ -29,6 +30,7 @@ static NSMutableString *bundlePath;
 + (void)loadTours 
 {
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    NSManagedObjectContext *context = [appDelegate managedObjectContext];
     bundlePath = nil;
     NSError *error;
     
@@ -58,11 +60,19 @@ static NSMutableString *bundlePath;
                     }
                     
                     if ([[doc.rootElement name] isEqualToString:@"tourml:TourSet"]) {
+
+                        TAPTourSet *tourSet = [NSEntityDescription insertNewObjectForEntityForName:@"TourSet" inManagedObjectContext:context];
+                        [tourSet setTourSetUrl:[NSURL URLWithString:endpoint]];
+                        NSMutableSet *containedToursSet = [[NSMutableSet alloc] init];
+                        
                         for (GDataXMLElement *ref in [doc.rootElement elementsForName:@"tourml:TourMLRef"]) {
                             [self getExternalTourMLDoc:[[ref attributeForName:@"tourml:uri"] stringValue]];
+                            [containedToursSet addObject:[NSURL URLWithString:[[ref attributeForName:@"tourml:uri"] stringValue]]];
                         }
+                        [tourSet setTours:containedToursSet];
+                        [context save:&error];// @TODO catch this better?
                     } else {
-                        [self parseTourMLDoc:doc];
+                        [self parseTourMLDoc:doc fromUrl:[NSURL URLWithString:endpoint]];
                     }
                 }
             }
@@ -76,6 +86,10 @@ static NSMutableString *bundlePath;
  */
 + (void)getExternalTourMLDoc:(NSString *)tourMLRef 
 {
+    // @TODO should these maybe move to a class var?
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    NSManagedObjectContext *context = [appDelegate managedObjectContext];
+    
     NSURL *url = [NSURL URLWithString:tourMLRef];
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     
@@ -100,18 +114,28 @@ static NSMutableString *bundlePath;
     }
     
     if ([[doc.rootElement name] isEqualToString:@"tourml:TourSet"]) {
+        
+        // @TODO check to see if we already have this set by url?
+        TAPTourSet *tourSet = [NSEntityDescription insertNewObjectForEntityForName:@"TourSet" inManagedObjectContext:context];
+        [tourSet setTourSetUrl:url];
+        NSMutableSet *containedToursSet = [[NSMutableSet alloc] init];
+        
         for (GDataXMLElement *ref in [doc.rootElement elementsForName:@"tourml:TourMLRef"]) {
             [self getExternalTourMLDoc:[[ref attributeForName:@"tourml:uri"] stringValue]];
+            
+            [containedToursSet addObject:[NSURL URLWithString:[[ref attributeForName:@"tourml:uri"] stringValue]]];
         }
+        [tourSet setTours:containedToursSet];
+        [context save:&error];// @TODO catch this better?
     } else {
-        [self parseTourMLDoc:doc];
+        [self parseTourMLDoc:doc fromUrl:url];
     }
 }
 
 /**
  * Parse an individual tour doc
  */
-+ (void)parseTourMLDoc:(GDataXMLDocument *)doc 
++ (void)parseTourMLDoc:(GDataXMLDocument *)doc fromUrl:(NSURL *)tourRefUrl
 {
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     NSManagedObjectContext *context = [appDelegate managedObjectContext];
@@ -192,6 +216,7 @@ static NSMutableString *bundlePath;
     
     bundlePath = nil;
 }
+
 
 /**
  * Process tour stops
