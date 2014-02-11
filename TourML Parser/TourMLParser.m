@@ -72,7 +72,7 @@ static NSMutableString *bundlePath;
                         [tourSet setTours:containedToursSet];
                         [context save:&error];// @TODO catch this better?
                     } else {
-                        [self parseTourMLDoc:doc fromUrl:[NSURL URLWithString:endpoint]];
+                        [self parseTourMLDoc:doc];
                     }
                 }
             }
@@ -122,20 +122,22 @@ static NSMutableString *bundlePath;
         
         for (GDataXMLElement *ref in [doc.rootElement elementsForName:@"tourml:TourMLRef"]) {
             [self getExternalTourMLDoc:[[ref attributeForName:@"tourml:uri"] stringValue]];
-            
             [containedToursSet addObject:[NSURL URLWithString:[[ref attributeForName:@"tourml:uri"] stringValue]]];
         }
+        // I guess in real life figure out an acceptable way to
+        // tie actual tours back to the tour set and properly
+        // establish a many to many relationship?
         [tourSet setTours:containedToursSet];
         [context save:&error];// @TODO catch this better?
     } else {
-        [self parseTourMLDoc:doc fromUrl:url];
+        [self parseTourMLDoc:doc];
     }
 }
 
 /**
  * Parse an individual tour doc
  */
-+ (void)parseTourMLDoc:(GDataXMLDocument *)doc fromUrl:(NSURL *)tourRefUrl
++ (void)parseTourMLDoc:(GDataXMLDocument *)doc
 {
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     NSManagedObjectContext *context = [appDelegate managedObjectContext];
@@ -185,6 +187,7 @@ static NSMutableString *bundlePath;
     
     // start creating new tour
     TAPTour *tour = [NSEntityDescription insertNewObjectForEntityForName:@"Tour" inManagedObjectContext:context];
+    
     // Tour attributes
     tour.id = tourId;
     tour.lastModified = lastModified;
