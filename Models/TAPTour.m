@@ -16,6 +16,7 @@
 
 @dynamic author;
 @dynamic id;
+@dynamic url;
 @dynamic bundlePath;
 @dynamic lastModified;
 @dynamic publishDate;

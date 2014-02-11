@@ -15,6 +15,7 @@
 
 @property (nonatomic, strong) NSString *author;
 @property (nonatomic, strong) NSString *id;
+@property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSString *bundlePath;
 @property (nonatomic, strong) NSDate *lastModified;
 @property (nonatomic, strong) NSDate *publishDate;

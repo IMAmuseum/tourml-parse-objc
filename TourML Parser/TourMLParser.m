@@ -72,7 +72,7 @@ static NSMutableString *bundlePath;
                         [tourSet setTours:containedToursSet];
                         [context save:&error];// @TODO catch this better?
                     } else {
-                        [self parseTourMLDoc:doc];
+                        [self parseTourMLDoc:doc fromUrl:[NSURL URLWithString:endpoint]];
                     }
                 }
             }
@@ -130,14 +130,14 @@ static NSMutableString *bundlePath;
         [tourSet setTours:containedToursSet];
         [context save:&error];// @TODO catch this better?
     } else {
-        [self parseTourMLDoc:doc];
+        [self parseTourMLDoc:doc fromUrl:url];
     }
 }
 
 /**
  * Parse an individual tour doc
  */
-+ (void)parseTourMLDoc:(GDataXMLDocument *)doc
++ (void)parseTourMLDoc:(GDataXMLDocument *)doc fromUrl:(NSURL *)tourRefUrl
 {
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     NSManagedObjectContext *context = [appDelegate managedObjectContext];
@@ -190,6 +190,7 @@ static NSMutableString *bundlePath;
     
     // Tour attributes
     tour.id = tourId;
+    tour.url = [tourRefUrl absoluteString];
     tour.lastModified = lastModified;
     tour.bundlePath = bundlePath;
     // TourMetadata
