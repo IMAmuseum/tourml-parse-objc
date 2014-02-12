@@ -2,15 +2,26 @@
 //  TAPTourSet.h
 //  launchpad-iphone
 //
-//  Created by David D'Amico on 2/10/14.
+//  Created by David D'Amico on 2/12/14.
 //  Copyright (c) 2014 IMALab. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+
+@class TAPTour;
 
 @interface TAPTourSet : NSManagedObject
 
-@property (nonatomic, strong) NSURL *tourSetUrl;
-@property (nonatomic, strong) NSSet *tours;
+@property (nonatomic, retain) NSString * tourRefUrl;
+@property (nonatomic, retain) NSSet *tours;
+@end
+
+@interface TAPTourSet (CoreDataGeneratedAccessors)
+
+- (void)addToursObject:(TAPTour *)value;
+- (void)removeToursObject:(TAPTour *)value;
+- (void)addTours:(NSSet *)values;
+- (void)removeTours:(NSSet *)values;
 
 @end

@@ -16,7 +16,7 @@
 
 @dynamic author;
 @dynamic id;
-@dynamic url;
+@dynamic tourRefUrl;
 @dynamic bundlePath;
 @dynamic lastModified;
 @dynamic publishDate;

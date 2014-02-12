@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "GDataXMLNode.h"
+@class TAPTour;
 
 @interface TourMLParser : NSObject
 
@@ -17,8 +18,8 @@
 
 @interface TourMLParser ()
 
-+ (void)getExternalTourMLDoc:(NSString *)tourMLRef;
-+ (void)parseTourMLDoc:(GDataXMLDocument *)doc fromUrl:(NSURL *)tourRefUrl;
++ (TAPTour *)getExternalTourMLDoc:(NSString *)tourMLRef;
++ (TAPTour *)parseTourMLDoc:(GDataXMLDocument *)doc fromUrl:(NSURL *)tourRefUrl;
 + (NSSet *)processStops:(GDataXMLElement *)element fromRoot:(GDataXMLElement *)root withContext:(NSManagedObjectContext *)context;
 + (NSSet *)processAssets:(NSArray *)elements fromRoot:(GDataXMLElement *)root withContext:(NSManagedObjectContext *)context;
 + (NSDictionary *)processTitle:(NSArray *)elements withContext:(NSManagedObjectContext *)context;

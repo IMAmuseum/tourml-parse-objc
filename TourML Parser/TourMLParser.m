@@ -27,19 +27,31 @@ static NSMutableString *bundlePath;
  * Kicks off the processing of tourml documents from a specified endpoint and any bundles found
  * in the 'Bundles' directory
  */
-+ (void)loadTours 
++ (void)loadTours
 {
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    NSManagedObjectContext *context = [appDelegate managedObjectContext];
     bundlePath = nil;
-    NSError *error;
+    
+    // set of endpoints
+    NSMutableArray *endpoints = [[NSMutableArray alloc] init];
     
     // process endpoint
     NSString *endpoint = [[appDelegate tapConfig] objectForKey:@"TourMLEndpoint"];
     if (endpoint != nil) {
-        [self getExternalTourMLDoc:endpoint];
+        [endpoints addObject:endpoint];
     }
-
+    
+    #pragma - get any endpoints that are in navigationitems
+    NSString* plistPath = [[NSBundle mainBundle] pathForResource:@"NavigationItems" ofType:@"plist"];
+    NSDictionary* navigationItemsRoot = [NSDictionary dictionaryWithContentsOfFile:plistPath];
+    NSArray* navigationItems = [navigationItemsRoot objectForKey:@"Navigation Items"];
+    for (NSDictionary* navigationItem in navigationItems) {
+        if ([navigationItem[@"type"] isEqualToString:@"tourset"]) {
+            [endpoints addObject:navigationItem[@"tour_endpoint"]];
+        }
+    }
+    
+    #pragma - we never actually get below here in THIS APP
     // process bundles
     NSString *bundleDir = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Bundles"];
     NSDirectoryEnumerator *bundleEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:bundleDir];
@@ -52,39 +64,25 @@ static NSMutableString *bundlePath;
                 NSBundle *bundle = [NSBundle bundleWithPath:tourBundlePath];
                 if (bundle) {
                     NSString *tourDataPath = [bundle pathForResource:@"tour" ofType:@"xml"];
-                    NSData *xmlData = [[NSMutableData alloc] initWithContentsOfFile:tourDataPath];
-                    
-                    GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:xmlData options:0 error:&error];
-                    if (doc == nil) {
-                        continue;
-                    }
-                    
-                    if ([[doc.rootElement name] isEqualToString:@"tourml:TourSet"]) {
-
-                        TAPTourSet *tourSet = [NSEntityDescription insertNewObjectForEntityForName:@"TourSet" inManagedObjectContext:context];
-                        [tourSet setTourSetUrl:[NSURL URLWithString:endpoint]];
-                        NSMutableSet *containedToursSet = [[NSMutableSet alloc] init];
-                        
-                        for (GDataXMLElement *ref in [doc.rootElement elementsForName:@"tourml:TourMLRef"]) {
-                            [self getExternalTourMLDoc:[[ref attributeForName:@"tourml:uri"] stringValue]];
-                            [containedToursSet addObject:[NSURL URLWithString:[[ref attributeForName:@"tourml:uri"] stringValue]]];
-                        }
-                        [tourSet setTours:containedToursSet];
-                        [context save:&error];// @TODO catch this better?
-                    } else {
-                        [self parseTourMLDoc:doc fromUrl:[NSURL URLWithString:endpoint]];
-                    }
+                    [endpoints addObject:tourDataPath];
                 }
             }
         }
     }
     
+    // now we should have a nice array of endpoints,
+    // run through them and get docs (and parse and
+    // persist them
+    for (NSString *endpoint in endpoints) {
+        NSLog(@"endpoint in loadTours: %@", endpoint);
+        [self getExternalTourMLDoc:endpoint];
+    }
 }
 
 /**
  * Retrieve data from a given tourMLRef
  */
-+ (void)getExternalTourMLDoc:(NSString *)tourMLRef 
++ (TAPTour *)getExternalTourMLDoc:(NSString *)tourMLRef
 {
     // @TODO should these maybe move to a class var?
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
@@ -101,43 +99,45 @@ static NSMutableString *bundlePath;
     
     if ([xmlData length] == 0 && error != nil) {
         NSLog(@"Unable to retrieve document from endpoint.");
-        return;
+        return nil;
     } else if (error != nil) {
         NSLog(@"Error occured retrieving from endpoint: %@", error);
-        return;
+        return nil;
     }
     
     GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:xmlData options:0 error:&error];
     
     if (doc == nil) {
-        return;
+        return nil;
     }
     
+    
+    
     if ([[doc.rootElement name] isEqualToString:@"tourml:TourSet"]) {
-        
-        // @TODO check to see if we already have this set by url?
-        TAPTourSet *tourSet = [NSEntityDescription insertNewObjectForEntityForName:@"TourSet" inManagedObjectContext:context];
-        [tourSet setTourSetUrl:url];
-        NSMutableSet *containedToursSet = [[NSMutableSet alloc] init];
+
+        TAPTourSet *tourset = [NSEntityDescription insertNewObjectForEntityForName:@"TourSet" inManagedObjectContext:context];
+        NSMutableSet *tours = [[NSMutableSet alloc] init];
         
         for (GDataXMLElement *ref in [doc.rootElement elementsForName:@"tourml:TourMLRef"]) {
-            [self getExternalTourMLDoc:[[ref attributeForName:@"tourml:uri"] stringValue]];
-            [containedToursSet addObject:[NSURL URLWithString:[[ref attributeForName:@"tourml:uri"] stringValue]]];
+            [tours addObject:[self getExternalTourMLDoc:[[ref attributeForName:@"tourml:uri"] stringValue]]];
         }
-        // I guess in real life figure out an acceptable way to
-        // tie actual tours back to the tour set and properly
-        // establish a many to many relationship?
-        [tourSet setTours:containedToursSet];
-        [context save:&error];// @TODO catch this better?
+        tourset.tourRefUrl = tourMLRef;
+        tourset.tours = tours;
+        if (![context save:&error]) {
+            NSLog(@"Error saving: %@", [error localizedDescription]);
+        }
+
+        return nil;
+        
     } else {
-        [self parseTourMLDoc:doc fromUrl:url];
+        return [self parseTourMLDoc:doc fromUrl:url];
     }
 }
 
 /**
  * Parse an individual tour doc
  */
-+ (void)parseTourMLDoc:(GDataXMLDocument *)doc fromUrl:(NSURL *)tourRefUrl
++ (TAPTour *)parseTourMLDoc:(GDataXMLDocument *)doc fromUrl:(NSURL *)tourRefUrl
 {
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     NSManagedObjectContext *context = [appDelegate managedObjectContext];
@@ -164,7 +164,7 @@ static NSMutableString *bundlePath;
             [context save:&error];
         } else {
             // tour in core data is newer so leave it alone
-            return;
+            return existingTour;
         }
     }
     
@@ -190,7 +190,7 @@ static NSMutableString *bundlePath;
     
     // Tour attributes
     tour.id = tourId;
-    tour.url = [tourRefUrl absoluteString];
+    tour.tourRefUrl = [tourRefUrl absoluteString];
     tour.lastModified = lastModified;
     tour.bundlePath = bundlePath;
     // TourMetadata
@@ -219,6 +219,8 @@ static NSMutableString *bundlePath;
     }
     
     bundlePath = nil;
+    return tour;
+    
 }
 
 
