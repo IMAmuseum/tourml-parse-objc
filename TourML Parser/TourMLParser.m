@@ -72,9 +72,8 @@ static NSMutableString *bundlePath;
     
     // now we should have a nice array of endpoints,
     // run through them and get docs (and parse and
-    // persist them
+    // persist them)
     for (NSString *endpoint in endpoints) {
-        NSLog(@"endpoint in loadTours: %@", endpoint);
         [self getExternalTourMLDoc:endpoint];
     }
 }
