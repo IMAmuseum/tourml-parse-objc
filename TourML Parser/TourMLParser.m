@@ -113,7 +113,18 @@ static NSMutableString *bundlePath;
     
     
     if ([[doc.rootElement name] isEqualToString:@"tourml:TourSet"]) {
-
+        
+        // check if we already have a tourset with this url, if we do dropit
+        NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"TourSet" inManagedObjectContext:context];
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        [request setEntity:entityDescription];
+        [request setPredicate: [NSPredicate predicateWithFormat: @"(tourRefUrl = %@)", tourMLRef]];
+        NSArray *existingToursets = [context executeFetchRequest:request error:&error];
+        for (TAPTourSet *existingTourset in existingToursets) {
+            [context deleteObject:existingTourset];
+            [context save:&error];
+        }
+        
         TAPTourSet *tourset = [NSEntityDescription insertNewObjectForEntityForName:@"TourSet" inManagedObjectContext:context];
         NSMutableSet *tours = [[NSMutableSet alloc] init];
         
