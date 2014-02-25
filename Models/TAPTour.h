@@ -28,6 +28,7 @@
 
 - (TAPStop *)stopFromKeycode:(NSString *)keycode;
 - (TAPStop *)stopFromId:(NSString *)id;
+- (NSSet *)stopsFromView:(NSString *)view;
 
 @end
 

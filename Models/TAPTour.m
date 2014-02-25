@@ -61,6 +61,13 @@
     }
 }
 
+- (NSSet *)stopsFromView:(NSString *)view
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"view == %@", view];
+    NSSet *result = [self.stop filteredSetUsingPredicate:predicate];
+    return result;
+}
+
 /**
  * Retrieves the stop for a given keycode
  */
