@@ -22,6 +22,14 @@
 @dynamic propertySet;
 @dynamic relationship;
 
+- (NSString *)originalUri
+{
+    [self willAccessValueForKey:@"uri"];
+    NSString *originalUri = [self primitiveValueForKey:@"uri"];
+    [self didAccessValueForKey:@"uri"];
+    return originalUri;
+}
+
 - (NSString *)uri 
 {
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];

@@ -17,6 +17,7 @@
 @property (nonatomic, strong) NSString *language;
 @property (nonatomic, strong) NSDate *lastModified;
 @property (nonatomic, strong) NSString *part;
+@property (nonatomic, strong, getter = originalUri) NSString *originalUri;
 @property (nonatomic, strong, getter = uri) NSString *uri;
 @property (nonatomic, strong) NSSet *propertySet;
 @property (nonatomic, strong) TAPAsset *relationship;
