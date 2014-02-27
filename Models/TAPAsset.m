@@ -28,6 +28,11 @@
 @dynamic watermark;
 @dynamic parseIndex;
 
+- (NSString *)getAssetId
+{
+    return self.id;
+}
+
 - (NSArray *)getContentsByPart:(NSString *)part
 {
     NSMutableArray *contents = [[NSMutableArray alloc] init];

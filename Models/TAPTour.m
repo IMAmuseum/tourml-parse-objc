@@ -61,6 +61,19 @@
     }
 }
 
+- (NSSet *)stopsFromArtworkId:(NSString *)artworkId
+{
+    // surely there is a better way to do this
+    NSMutableArray *stopsContainingAssetsWithId = [[NSMutableArray alloc] init];
+    for (TAPStop *stop in self.stop) {
+        NSArray *filteredAssets = [[stop getAssetsByUsage:@"artwork"] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id = %@", artworkId]];
+        if ([filteredAssets count] > 0) {
+            [stopsContainingAssetsWithId addObject:stop];
+        }
+    }
+    return [[NSMutableSet alloc] initWithArray:stopsContainingAssetsWithId];
+}
+
 - (NSSet *)stopsFromView:(NSString *)view
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"view == %@", view];

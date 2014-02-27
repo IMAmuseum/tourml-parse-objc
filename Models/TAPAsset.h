@@ -26,6 +26,7 @@
 @property (nonatomic, strong) TAPAssetRef *watermark;
 @property NSInteger parseIndex;
 
+- (NSString *)getAssetId;
 - (NSArray *)getContentsByPart:(NSString *)part;
 - (NSArray *)getSourcesByPart:(NSString *)part;
 
