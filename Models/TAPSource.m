@@ -19,6 +19,7 @@
 @dynamic lastModified;
 @dynamic part;
 @dynamic uri;
+@dynamic originalUri;
 @dynamic propertySet;
 @dynamic relationship;
 
