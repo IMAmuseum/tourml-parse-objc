@@ -23,6 +23,13 @@
 @dynamic propertySet;
 @dynamic relationship;
 
+- (NSString *)propertyByName:(NSString *)name
+{
+    NSArray *filteredProperties = [[self.propertySet filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"name = %@", name]] allObjects];
+    TAPProperty *targetProperty = [filteredProperties objectAtIndex:0];
+    return targetProperty.value;
+}
+
 - (NSString *)originalUri
 {
     [self willAccessValueForKey:@"uri"];

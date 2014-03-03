@@ -21,6 +21,9 @@
 @property (nonatomic, strong, getter = uri) NSString *uri;
 @property (nonatomic, strong) NSSet *propertySet;
 @property (nonatomic, strong) TAPAsset *relationship;
+
+- (NSString *)propertyByName:(NSString *)name;
+
 @end
 
 @interface TAPSource (CoreDataGeneratedAccessors)
