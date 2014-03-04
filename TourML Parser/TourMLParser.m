@@ -241,6 +241,7 @@ static NSMutableString *bundlePath;
 {
     NSMutableSet *stops = [[NSMutableSet alloc] init];
     
+    NSInteger parseIncrementor = 1;
     for (GDataXMLElement *stopElement in [element elementsForName:@"tourml:Stop"]) {
         TAPStop *stop = [NSEntityDescription insertNewObjectForEntityForName:@"Stop" inManagedObjectContext:context];
         stop.id = [[stopElement attributeForName:@"tourml:id"] stringValue];
@@ -249,8 +250,10 @@ static NSMutableString *bundlePath;
         stop.desc = [self processDescription:[stopElement elementsForName:@"tourml:Description"] withContext:context];
         stop.propertySet = [self processPropertySet:[[stopElement elementsForName:@"tourml:PropertySet"] objectAtIndex:0] withContext:context];
         stop.assetRef = [self processAssets:[stopElement elementsForName:@"tourml:AssetRef"] fromRoot:root withContext:context];
+        stop.parseIndex = parseIncrementor;
         
         [stops addObject:stop];
+        parseIncrementor++;
     }
     
     // now that all of the stops are available, add all of the associated connections
