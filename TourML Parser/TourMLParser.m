@@ -41,7 +41,7 @@ static NSMutableString *bundlePath;
         [endpoints addObject:endpoint];
     }
     
-    #pragma - get any endpoints that are in navigationitems
+    #pragma mark - get any endpoints that are in navigationitems
     NSString* plistPath = [[NSBundle mainBundle] pathForResource:@"NavigationItems" ofType:@"plist"];
     NSDictionary* navigationItemsRoot = [NSDictionary dictionaryWithContentsOfFile:plistPath];
     NSArray* navigationItems = [navigationItemsRoot objectForKey:@"Navigation Items"];
@@ -51,7 +51,7 @@ static NSMutableString *bundlePath;
         }
     }
     
-    #pragma - we never actually get below here in THIS APP
+    #pragma mark - we never actually get below here in THIS APP
     // process bundles
     NSString *bundleDir = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Bundles"];
     NSDirectoryEnumerator *bundleEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:bundleDir];

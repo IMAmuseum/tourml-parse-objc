@@ -22,6 +22,7 @@
 @dynamic view;
 @dynamic assetRef;
 @dynamic destinationConnection;
+@dynamic parseIndex;
 @dynamic propertySet;
 @dynamic sourceConnection;
 @dynamic tour;

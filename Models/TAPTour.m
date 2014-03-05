@@ -71,12 +71,12 @@
             [stopsContainingAssetsWithId addObject:stop];
         }
     }
-    return [[NSMutableSet alloc] initWithArray:stopsContainingAssetsWithId];
+    return [[NSSet alloc] initWithArray:stopsContainingAssetsWithId];
 }
 
 - (NSSet *)stopsFromView:(NSString *)view
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"view == %@", view];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"view = %@", view];
     NSSet *result = [self.stop filteredSetUsingPredicate:predicate];
     return result;
 }
