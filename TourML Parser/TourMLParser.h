@@ -13,6 +13,7 @@
 @interface TourMLParser : NSObject
 
 + (void)loadTours;
++ (void)loadTours:(NSArray *)additionalEndpoints;
 
 @end
 
