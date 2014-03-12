@@ -261,7 +261,7 @@ static NSMutableArray *endpoints;
         stop.desc = [self processDescription:[stopElement elementsForName:@"tourml:Description"] withContext:context];
         stop.propertySet = [self processPropertySet:[[stopElement elementsForName:@"tourml:PropertySet"] objectAtIndex:0] withContext:context];
         stop.assetRef = [self processAssets:[stopElement elementsForName:@"tourml:AssetRef"] fromRoot:root withContext:context];
-        stop.parseIndex = parseIncrementor;
+        stop.parseIndex = [NSNumber numberWithInt:parseIncrementor];
         
         [stops addObject:stop];
         parseIncrementor++;
@@ -316,7 +316,7 @@ static NSMutableArray *endpoints;
         asset.machineRights = [[[assetElement elementsForName:@"tourml:MachineRights"] objectAtIndex:0] stringValue];
         asset.expiration = [self convertStringToDate:[[[assetElement elementsForName:@"tourml:MachineRights"] objectAtIndex:0] stringValue]];
         asset.propertySet = [self processPropertySet:[[assetElement elementsForName:@"tourml:PropertySet"] objectAtIndex:0] withContext:context];
-        asset.parseIndex = parseIncrementor;
+        asset.parseIndex = [NSNumber numberWithInt:parseIncrementor];
         
         // add asset content
         NSMutableSet *assetContent = [[NSMutableSet alloc] init];

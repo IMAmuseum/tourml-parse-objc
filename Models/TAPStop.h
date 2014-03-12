@@ -23,7 +23,7 @@
 @property (nonatomic, strong) NSSet *sourceConnection;
 @property (nonatomic, strong) TAPTour *tour;
 @property (nonatomic, strong) TAPTour *tourRootStop;
-@property NSInteger parseIndex;
+@property (nonatomic, strong) NSNumber *parseIndex;
 
 - (NSString *)getIconPath;
 - (NSArray *)getAssets;
