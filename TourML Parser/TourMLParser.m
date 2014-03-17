@@ -48,21 +48,10 @@ static NSMutableArray *endpoints;
     
     // process endpoint
     NSString *endpoint = [[appDelegate tapConfig] objectForKey:@"TourMLEndpoint"];
-    if (endpoint != nil) {
+    if (endpoint != nil && [endpoint length] > 0) {
         [endpoints addObject:endpoint];
     }
     
-#pragma mark - get any endpoints that are in navigationitems
-    NSString* plistPath = [[NSBundle mainBundle] pathForResource:@"NavigationItems" ofType:@"plist"];
-    NSDictionary* navigationItemsRoot = [NSDictionary dictionaryWithContentsOfFile:plistPath];
-    NSArray* navigationItems = [navigationItemsRoot objectForKey:@"Navigation Items"];
-    for (NSDictionary* navigationItem in navigationItems) {
-        if ([navigationItem[@"type"] isEqualToString:@"tourset"]) {
-            [endpoints addObject:navigationItem[@"tour_endpoint"]];
-        }
-    }
-    
-#pragma mark - we never actually get below here in THIS APP
     // process bundles
     NSString *bundleDir = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Bundles"];
     NSDirectoryEnumerator *bundleEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:bundleDir];
