@@ -121,7 +121,7 @@
 /**
  * Convenience method for retrieving all resources with a particular usage by parseIndex
  */
-- (NSArray *)getAssetsByUsageOrderByParseIndex:(NSString *)usage
+- (NSArray *)getAppResourcesByUsageOrderByParseIndex:(NSString *)usage
 {
     NSMutableArray *assets = [[NSMutableArray alloc] init];
     for (TAPAssetRef *assetRef in [self.appResource allObjects]) {
