@@ -118,4 +118,20 @@
     return assets;
 }
 
+/**
+ * Convenience method for retrieving all resources with a particular usage by parseIndex
+ */
+- (NSArray *)getAssetsByUsageOrderByParseIndex:(NSString *)usage
+{
+    NSMutableArray *assets = [[NSMutableArray alloc] init];
+    for (TAPAssetRef *assetRef in [self.appResource allObjects]) {
+        if ([assetRef.usage isEqualToString:usage]) {
+            [assets addObject:assetRef.asset];
+        }
+    }
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"parseIndex" ascending:YES];
+    NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+    return [assets sortedArrayUsingDescriptors:sortDescriptors];
+}
+
 @end

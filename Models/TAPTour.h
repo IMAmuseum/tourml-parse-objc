@@ -31,6 +31,7 @@
 - (NSSet *)stopsFromView:(NSString *)view;
 - (NSSet *)stopsFromArtworkId:(NSString *)artworkId;
 - (NSArray *)getAppResourcesByUsage:(NSString *)usage;
+- (NSArray *)getAssetsByUsageOrderByParseIndex:(NSString *)usage;
 
 @end
 
