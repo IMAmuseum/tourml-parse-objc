@@ -103,4 +103,19 @@
     return stop;
 }
 
+/**
+ * Convenience method for retrieving all assets with a particular usage
+ */
+- (NSArray *)getAppResourcesByUsage:(NSString *)usage
+{
+    NSMutableArray *assets = [[NSMutableArray alloc] init];
+    for (TAPAssetRef *assetRef in [self.appResource allObjects]) {
+        if ([assetRef.usage isEqualToString:usage]) {
+            [assets addObject:assetRef.asset];
+        }
+    }
+
+    return assets;
+}
+
 @end

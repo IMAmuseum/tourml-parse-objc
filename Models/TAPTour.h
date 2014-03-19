@@ -30,6 +30,7 @@
 - (TAPStop *)stopFromId:(NSString *)id;
 - (NSSet *)stopsFromView:(NSString *)view;
 - (NSSet *)stopsFromArtworkId:(NSString *)artworkId;
+- (NSArray *)getAppResourcesByUsage:(NSString *)usage;
 
 @end
 
