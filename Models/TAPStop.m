@@ -40,6 +40,8 @@
     
     if ([title objectForKey:[appDelegate language]]) {
         return [title objectForKey:[appDelegate language]];
+    } else if ([title objectForKey:@"en"]) {
+        return [title objectForKey:@"en"];
     } else {
         return [title objectForKey:@""];
     }
@@ -57,6 +59,8 @@
     
     if ([description objectForKey:[appDelegate language]]) {
         return [description objectForKey:[appDelegate language]];
+    } else if ([description objectForKey:@"en"]) {
+        return [description objectForKey:@"en"];
     } else {
         return [description objectForKey:@""];
     }
