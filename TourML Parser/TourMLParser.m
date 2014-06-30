@@ -129,7 +129,10 @@ static NSMutableArray *endpoints;
         NSMutableSet *tours = [[NSMutableSet alloc] init];
         
         for (GDataXMLElement *ref in [doc.rootElement elementsForName:@"tourml:TourMLRef"]) {
-            [tours addObject:[self getExternalTourMLDoc:[[ref attributeForName:@"tourml:uri"] stringValue]]];
+            TAPTour *contextTour = [self getExternalTourMLDoc:[[ref attributeForName:@"tourml:uri"] stringValue]];
+            if (contextTour != nil) {
+                [tours addObject:contextTour];
+            }
         }
         tourset.tourRefUrl = tourMLRef;
         tourset.tours = tours;
