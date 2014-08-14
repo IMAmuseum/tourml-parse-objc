@@ -88,6 +88,9 @@ static NSMutableArray *endpoints;
     NSManagedObjectContext *context = [appDelegate managedObjectContext];
     
     NSURL *url = [NSURL URLWithString:tourMLRef];
+    if (url == nil) {
+        url = [NSURL fileURLWithPath:tourMLRef];
+    }
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     
     NSURLResponse *response = nil;
