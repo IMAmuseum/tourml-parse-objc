@@ -1,3 +1,3 @@
-##Tap Obj-c
+##Tap Obj-C
 
-Just the modeling and parsing pieces of the tap code extracted from existing iOS tap applications for use here as an included sub-module.
+An Obj-C library that parses TourML from an included bundle or from a remote source. This repository contains all necessary parsing code and models for storing TourML in Core Data.
